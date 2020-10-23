@@ -134,11 +134,16 @@ namespace Entitas {
                 );
             }
 
+            addComponent(index, component);
+        }
+
+        void addComponent(int index, IComponent component) {
             _components[index] = component;
             _componentsCache = null;
             _componentIndicesCache = null;
             _toStringCache = null;
-            if (OnComponentAdded != null) {
+            if (OnComponentAdded != null)
+            {
                 OnComponentAdded(this, index, component);
             }
         }
@@ -155,7 +160,9 @@ namespace Entitas {
                 );
             }
 
-            if (!HasComponent(index)) {
+            var component = _components[index];
+
+            if (component == null) {
                 throw new EntityDoesNotHaveComponentException(
                     index, "Cannot remove component '" +
                            _contextInfo.componentNames[index] + "' from " + this + "!",
@@ -164,7 +171,7 @@ namespace Entitas {
                 );
             }
 
-            replaceComponent(index, null);
+            replaceComponent(index, component, null);
         }
 
         /// Replaces an existing component at the specified index
@@ -179,10 +186,12 @@ namespace Entitas {
                 );
             }
 
-            if (HasComponent(index)) {
-                replaceComponent(index, component);
+            var prevComponent = _components[index];
+
+            if (prevComponent != null) {
+                replaceComponent(index, prevComponent, component);
             } else if (component != null) {
-                AddComponent(index, component);
+                addComponent(index, component);
             }
         }
 
@@ -191,30 +200,43 @@ namespace Entitas {
             // _toStringCache = null;
 
             var previousComponent = _components[index];
-            if (replacement != previousComponent) {
+            replaceComponent(index, previousComponent, replacement);
+        }
+
+        void replaceComponent(int index, IComponent previousComponent, IComponent replacement) {
+            if (replacement != previousComponent)
+            {
                 _components[index] = replacement;
                 _componentsCache = null;
-                if (replacement != null) {
-                    if (OnComponentReplaced != null) {
+                if (replacement != null)
+                {
+                    if (OnComponentReplaced != null)
+                    {
                         OnComponentReplaced(
                             this, index, previousComponent, replacement
                         );
                     }
-                } else {
+                }
+                else
+                {
                     _componentIndicesCache = null;
 
                     // TODO VD PERFORMANCE
                     _toStringCache = null;
 
-                    if (OnComponentRemoved != null) {
+                    if (OnComponentRemoved != null)
+                    {
                         OnComponentRemoved(this, index, previousComponent);
                     }
                 }
 
                 GetComponentPool(index).Push(previousComponent);
 
-            } else {
-                if (OnComponentReplaced != null) {
+            }
+            else
+            {
+                if (OnComponentReplaced != null)
+                {
                     OnComponentReplaced(
                         this, index, previousComponent, replacement
                     );
@@ -306,8 +328,9 @@ namespace Entitas {
         public void RemoveAllComponents() {
             _toStringCache = null;
             for (int i = 0; i < _components.Length; i++) {
-                if (_components[i] != null) {
-                    replaceComponent(i, null);
+                var comp = _components[i];
+                if (comp != null) {
+                    replaceComponent(i, comp, null);
                 }
             }
         }
