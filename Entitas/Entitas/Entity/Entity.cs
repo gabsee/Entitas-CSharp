@@ -426,11 +426,11 @@ namespace Entitas {
                     .Append("(");
 
                 const string separator = ", ";
-                var components = GetComponents();
-                var lastSeparator = components.Length - 1;
-                for (int i = 0; i < components.Length; i++) {
-                    var component = components[i];
-                    var type = component.GetType();
+                var componentIndices = GetComponentIndices();
+                var lastSeparator = componentIndices.Length - 1;
+                for (int i = 0; i < componentIndices.Length; i++) {
+                    var componentIndex = componentIndices[i];
+                    var componentName = contextInfo.componentNames[componentIndex];
 
                     // TODO VD PERFORMANCE
                     _toStringCache = null;
@@ -443,7 +443,7 @@ namespace Entitas {
 //                            : type.ToCompilableString().RemoveComponentSuffix()
 //                    );
 
-                    _toStringBuilder.Append(component.ToString());
+                    _toStringBuilder.Append(componentName);
 
                     if (i < lastSeparator) {
                         _toStringBuilder.Append(separator);
