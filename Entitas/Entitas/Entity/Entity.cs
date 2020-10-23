@@ -227,7 +227,8 @@ namespace Entitas {
         /// The prefered way is to use the
         /// generated methods from the code generator.
         public IComponent GetComponent(int index) {
-            if (!HasComponent(index)) {
+            var comp = _components[index];
+            if (comp == null) {
                 throw new EntityDoesNotHaveComponentException(
                     index, "Cannot get component '" +
                            _contextInfo.componentNames[index] + "' from " + this + "!",
@@ -235,8 +236,7 @@ namespace Entitas {
                     "before getting it."
                 );
             }
-
-            return _components[index];
+            return comp;
         }
 
         /// Returns all added components.
