@@ -63,7 +63,6 @@ namespace Entitas {
 
         readonly Dictionary<IMatcher<TEntity>, IGroup<TEntity>> _groups = new Dictionary<IMatcher<TEntity>, IGroup<TEntity>>();
         readonly List<IGroup<TEntity>>[] _groupsForIndex;
-        readonly ObjectPool<List<GroupChanged<TEntity>>> _groupChangedListPool;
 
         readonly Dictionary<string, IEntityIndex> _entityIndices;
 
@@ -103,10 +102,6 @@ namespace Entitas {
             _groupsForIndex = new List<IGroup<TEntity>>[totalComponents];
             _componentPools = new Stack<IComponent>[totalComponents];
             _entityIndices = new Dictionary<string, IEntityIndex>();
-            _groupChangedListPool = new ObjectPool<List<GroupChanged<TEntity>>>(
-                () => new List<GroupChanged<TEntity>>(),
-                list => list.Clear()
-            );
 
             // Cache delegates to avoid gc allocations
             _cachedEntityChanged = updateGroupsComponentAddedOrRemoved;
@@ -280,24 +275,17 @@ namespace Entitas {
         void updateGroupsComponentAddedOrRemoved(IEntity entity, int index, IComponent component) {
             var groups = _groupsForIndex[index];
             if (groups != null) {
-                var events = _groupChangedListPool.Get();
-
                 var tEntity = (TEntity)entity;
 
                 for (int i = 0; i < groups.Count; i++) {
-                    events.Add(groups[i].HandleEntity(tEntity));
-                }
-
-                for (int i = 0; i < events.Count; i++) {
-                    var groupChangedEvent = events[i];
+                    var group = groups[i];
+                    var groupChangedEvent = group.HandleEntity(tEntity);
                     if (groupChangedEvent != null) {
                         groupChangedEvent(
-                            groups[i], tEntity, index, component
+                            group, tEntity, index, component
                         );
                     }
                 }
-
-                _groupChangedListPool.Push(events);
             }
         }
 
