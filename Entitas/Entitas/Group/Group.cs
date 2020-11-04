@@ -61,14 +61,18 @@ namespace Entitas {
 
         /// This is used by the context to manage the group.
         public void UpdateEntity(TEntity entity, int index, IComponent previousComponent, IComponent newComponent) {
-            if (_entities.Contains(entity)) {
-                if (OnEntityRemoved != null) {
+            bool callRemoved = OnEntityRemoved != null;
+            bool callAdded = OnEntityAdded != null;
+            bool callUpdated = OnEntityUpdated != null;
+
+            if ((callRemoved || callAdded || callUpdated) && _entities.Contains(entity)) {
+                if (callRemoved) {
                     OnEntityRemoved(this, entity, index, previousComponent);
                 }
-                if (OnEntityAdded != null) {
+                if (callAdded) {
                     OnEntityAdded(this, entity, index, newComponent);
                 }
-                if (OnEntityUpdated != null) {
+                if (callUpdated) {
                     OnEntityUpdated(
                         this, entity, index, previousComponent, newComponent
                     );
