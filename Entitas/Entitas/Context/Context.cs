@@ -100,7 +100,7 @@ namespace Entitas {
             _entityFactory = entityFactory;
 
             _groupsForIndex = new List<IGroup<TEntity>>[totalComponents];
-            _componentPools = new Stack<IComponent>[totalComponents];
+            _componentPools = InitComponentPools();
             _entityIndices = new Dictionary<string, IEntityIndex>();
 
             // Cache delegates to avoid gc allocations
@@ -118,6 +118,14 @@ namespace Entitas {
             }
 
             return new ContextInfo("Unnamed Context", componentNames, null);
+        }
+
+        Stack<IComponent>[] InitComponentPools() {
+            var componentPools = new Stack<IComponent>[totalComponents];
+            for (int i = 0; i < totalComponents; i++) {
+                componentPools[i] = ComponentPool.Get(_contextInfo.componentTypes[i]);
+            }
+            return componentPools;
         }
 
         /// Creates a new entity or gets a reusable entity from the

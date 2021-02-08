@@ -100,6 +100,7 @@
     <Compile Include="Entitas\Collector\TriggerOnEventMatcherExtension.cs" />
     <Compile Include="Entitas\Collector\ICollector.cs" />
     <Compile Include="Entitas\Systems\MultiReactiveSystem.cs" />
+    <Compile Include="Entitas\Context\ComponentPool.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
