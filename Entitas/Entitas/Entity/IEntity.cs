@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 
 namespace Entitas {
 
@@ -25,13 +25,13 @@ namespace Entitas {
         int creationIndex { get; }
         bool isEnabled { get; }
 
-        Stack<IComponent>[] componentPools { get; }
+        ConcurrentStack<IComponent>[] componentPools { get; }
         ContextInfo contextInfo { get; }
         IAERC aerc { get; }
 
         void Initialize(int creationIndex,
             int totalComponents,
-            Stack<IComponent>[] componentPools,
+            ConcurrentStack<IComponent>[] componentPools,
             ContextInfo contextInfo = null,
             IAERC aerc = null);
 
@@ -51,7 +51,7 @@ namespace Entitas {
 
         void RemoveAllComponents();
 
-        Stack<IComponent> GetComponentPool(int index);
+        ConcurrentStack<IComponent> GetComponentPool(int index);
         IComponent CreateComponent(int index, Type type);
         T CreateComponent<T>(int index) where T : new();
 

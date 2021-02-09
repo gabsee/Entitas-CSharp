@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using DesperateDevs.CodeGeneration;
 using DesperateDevs.Utils;
@@ -47,8 +47,8 @@ ${memberAssignmentList}
                 var index = ${Index};
                 if (value) {
                     var componentPool = GetComponentPool(index);
-                    var component = componentPool.Count > 0
-                            ? componentPool.Pop()
+                    var component = componentPool.TryPop(out Entitas.IComponent comp) 
+                            ? comp
                             : ${componentName}Component;
 
                     AddComponent(index, component);

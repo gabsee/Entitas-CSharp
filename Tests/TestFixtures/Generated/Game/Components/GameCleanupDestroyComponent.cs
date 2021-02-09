@@ -17,8 +17,8 @@ public partial class GameEntity {
                 var index = GameComponentsLookup.CleanupDestroy;
                 if (value) {
                     var componentPool = GetComponentPool(index);
-                    var component = componentPool.Count > 0
-                            ? componentPool.Pop()
+                    var component = componentPool.TryPop(out Entitas.IComponent comp)
+                            ? comp
                             : cleanupDestroyComponent;
 
                     AddComponent(index, component);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 
@@ -52,7 +53,7 @@ namespace Entitas {
         /// reusable component from the componentPool.
         /// Use entity.GetComponentPool(index) to get a componentPool for
         /// a specific component index.
-        public Stack<IComponent>[] componentPools { get { return _componentPools; } }
+        public ConcurrentStack<IComponent>[] componentPools { get { return _componentPools; } }
 
         /// The contextInfo is set by the context which created the entity and
         /// contains information about the context.
@@ -73,7 +74,7 @@ namespace Entitas {
 
         int _totalComponents;
         IComponent[] _components;
-        Stack<IComponent>[] _componentPools;
+        ConcurrentStack<IComponent>[] _componentPools;
         ContextInfo _contextInfo;
         IAERC _aerc;
 
@@ -87,7 +88,7 @@ namespace Entitas {
             _indexBuffer = new List<int>();
         }
 
-        public void Initialize(int creationIndex, int totalComponents, Stack<IComponent>[] componentPools, ContextInfo contextInfo = null, IAERC aerc = null) {
+        public void Initialize(int creationIndex, int totalComponents, ConcurrentStack<IComponent>[] componentPools, ContextInfo contextInfo = null, IAERC aerc = null) {
             Reactivate(creationIndex);
 
             _totalComponents = totalComponents;
@@ -142,8 +143,7 @@ namespace Entitas {
             _componentsCache = null;
             _componentIndicesCache = null;
             _toStringCache = null;
-            if (OnComponentAdded != null)
-            {
+            if (OnComponentAdded != null) {
                 OnComponentAdded(this, index, component);
             }
         }
@@ -204,39 +204,30 @@ namespace Entitas {
         }
 
         void replaceComponent(int index, IComponent previousComponent, IComponent replacement) {
-            if (replacement != previousComponent)
-            {
+            if (replacement != previousComponent) {
                 _components[index] = replacement;
                 _componentsCache = null;
-                if (replacement != null)
-                {
-                    if (OnComponentReplaced != null)
-                    {
+                if (replacement != null) {
+                    if (OnComponentReplaced != null) {
                         OnComponentReplaced(
                             this, index, previousComponent, replacement
                         );
                     }
-                }
-                else
-                {
+                } else {
                     _componentIndicesCache = null;
 
                     // TODO VD PERFORMANCE
                     _toStringCache = null;
 
-                    if (OnComponentRemoved != null)
-                    {
+                    if (OnComponentRemoved != null) {
                         OnComponentRemoved(this, index, previousComponent);
                     }
                 }
 
                 GetComponentPool(index).Push(previousComponent);
 
-            }
-            else
-            {
-                if (OnComponentReplaced != null)
-                {
+            } else {
+                if (OnComponentReplaced != null) {
                     OnComponentReplaced(
                         this, index, previousComponent, replacement
                     );
@@ -341,10 +332,10 @@ namespace Entitas {
         /// Removed components will be pushed to the componentPool.
         /// Use entity.CreateComponent(index, type) to get a new or
         /// reusable component from the componentPool.
-        public Stack<IComponent> GetComponentPool(int index) {
+        public ConcurrentStack<IComponent> GetComponentPool(int index) {
             var componentPool = _componentPools[index];
             if (componentPool == null) {
-                componentPool = new Stack<IComponent>();
+                componentPool = new ConcurrentStack<IComponent>();
                 _componentPools[index] = componentPool;
             }
 
@@ -355,8 +346,8 @@ namespace Entitas {
         /// for the specified component index.
         public IComponent CreateComponent(int index, Type type) {
             var componentPool = GetComponentPool(index);
-            return componentPool.Count > 0
-                ? componentPool.Pop()
+            return componentPool.TryPop(out IComponent component)
+                                     ? component
                 : (IComponent)Activator.CreateInstance(type);
         }
 
@@ -364,7 +355,9 @@ namespace Entitas {
         /// for the specified component index.
         public T CreateComponent<T>(int index) where T : new() {
             var componentPool = GetComponentPool(index);
-            return componentPool.Count > 0 ? (T)componentPool.Pop() : new T();
+            return componentPool.TryPop(out IComponent component)
+                ? (T)component
+                : new T();
         }
 
         /// Returns the number of objects that retain this entity.
@@ -442,9 +435,9 @@ namespace Entitas {
                     .Append(_creationIndex)
 
                     // TODO VD PERFORMANCE
-//                    .Append("(*")
-//                    .Append(retainCount)
-//                    .Append(")")
+                    //                    .Append("(*")
+                    //                    .Append(retainCount)
+                    //                    .Append(")")
 
                     .Append("(");
 
@@ -458,13 +451,13 @@ namespace Entitas {
                     // TODO VD PERFORMANCE
                     _toStringCache = null;
 
-//                    var implementsToString = type.GetMethod("ToString")
-//                        .DeclaringType.ImplementsInterface<IComponent>();
-//                    _toStringBuilder.Append(
-//                        implementsToString
-//                            ? component.ToString()
-//                            : type.ToCompilableString().RemoveComponentSuffix()
-//                    );
+                    //                    var implementsToString = type.GetMethod("ToString")
+                    //                        .DeclaringType.ImplementsInterface<IComponent>();
+                    //                    _toStringBuilder.Append(
+                    //                        implementsToString
+                    //                                                 ? component.ToString()
+                    //                            : type.ToCompilableString().RemoveComponentSuffix()
+                    //                    );
 
                     _toStringBuilder.Append(componentName);
 

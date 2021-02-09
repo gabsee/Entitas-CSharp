@@ -1,3 +1,4 @@
+﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,7 +13,7 @@ public static class TestExtensions {
 
     public static TestEntity CreateEntity(this nspec spec) {
         var entity = new TestEntity();
-        entity.Initialize(0, CID.TotalComponents, new Stack<IComponent>[CID.TotalComponents]);
+        entity.Initialize(0, CID.TotalComponents, new ConcurrentStack<IComponent>[CID.TotalComponents]);
         return entity;
     }
 

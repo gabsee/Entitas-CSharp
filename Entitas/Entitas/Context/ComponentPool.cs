@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace Entitas {
@@ -6,19 +7,19 @@ namespace Entitas {
 
         private static Dictionary<Type, WeakReference> _componentPools;
 
-        public static Stack<IComponent> Get<TComponent>() where TComponent : IComponent {
+        public static ConcurrentStack<IComponent> Get<TComponent>() where TComponent : IComponent {
             return Get(typeof(TComponent));
         }
 
-        public static Stack<IComponent> Get(Type componentType) {
+        public static ConcurrentStack<IComponent> Get(Type componentType) {
             if (_componentPools == null) {
                 _componentPools = new Dictionary<Type, WeakReference>();
             }
             if (!_componentPools.ContainsKey(componentType) || !_componentPools[componentType].IsAlive) {
-                var stack = new Stack<IComponent>();
+                var stack = new ConcurrentStack<IComponent>();
                 _componentPools[componentType] = new WeakReference(stack);
             }
-            return _componentPools[componentType].Target as Stack<IComponent>;
+            return _componentPools[componentType].Target as ConcurrentStack<IComponent>;
         }
     }
 }

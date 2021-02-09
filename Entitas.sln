@@ -167,4 +167,24 @@ Global
 		{09DBBDC0-EEA5-42C5-B9A9-E83C0C6FCD8E} = {865DDCE8-CE36-4ECD-A67D-858F6C35CDE5}
 		{6F01CC45-F951-43A5-923E-D3778F9DD435} = {663F8023-1E6F-49FE-83D0-F60871AD282D}
 	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		Policies = $0
+		$0.TextStylePolicy = $1
+		$1.FileWidth = 80
+		$1.TabsToSpaces = True
+		$1.scope = text/x-csharp
+		$0.CSharpFormattingPolicy = $2
+		$2.NewLinesForBracesInMethods = False
+		$2.scope = text/x-csharp
+		$2.NewLinesForBracesInProperties = False
+		$2.NewLinesForBracesInAccessors = False
+		$2.NewLinesForBracesInAnonymousMethods = False
+		$2.NewLinesForBracesInControlBlocks = False
+		$2.NewLinesForBracesInAnonymousTypes = False
+		$2.NewLinesForBracesInObjectCollectionArrayInitializers = False
+		$2.NewLinesForBracesInLambdaExpressionBody = False
+		$2.NewLinesForBracesInTypes = False
+		$2.NewLineForElse = False
+		$0.StandardHeader = $3
+	EndGlobalSection
 EndGlobal

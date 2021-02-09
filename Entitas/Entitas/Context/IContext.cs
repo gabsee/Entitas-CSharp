@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
 
 namespace Entitas {
 
@@ -15,7 +15,7 @@ namespace Entitas {
 
         int totalComponents { get; }
 
-        Stack<IComponent>[] componentPools { get; }
+        ConcurrentStack<IComponent>[] componentPools { get; }
         ContextInfo contextInfo { get; }
 
         int count { get; }
