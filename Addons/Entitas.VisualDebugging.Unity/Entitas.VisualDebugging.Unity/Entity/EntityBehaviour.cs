@@ -42,25 +42,23 @@ namespace Entitas.VisualDebugging.Unity {
         }
 
         void ComponentAdded(IEntity entity, int index, IComponent component) {
-            if(_removedComponents.Contains(index)) {
+            if (_removedComponents.Contains(index)) {
                 _removedComponents.Remove(index);
-            }
-            else {
+            } else {
                 _addedComponents.Add(index);
             }
         }
 
-        void ComponentRemoved(IEntity entity, int index, IComponent component)  {
+        void ComponentRemoved(IEntity entity, int index, IComponent component) {
             if (_addedComponents.Contains(index)) {
                 _addedComponents.Remove(index);
-            }
-            else {
+            } else {
                 _removedComponents.Add(index);
             }
         }
 
         void Update() {
-            if (_addedComponents.Count > 0 || _removedComponents.Count > 0)  {
+            if (_addedComponents.Count > 0 || _removedComponents.Count > 0) {
                 if (_entity != null && _cachedName != _entity.ToString()) {
                     name = _cachedName = _entity.ToString();
                 }

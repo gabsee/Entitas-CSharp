@@ -17,7 +17,7 @@ public partial class TestEntity {
                 var index = TestComponentsLookup.Flag;
                 if (value) {
                     var componentPool = GetComponentPool(index);
-                    var component = componentPool.TryPop(out Entitas.IComponent comp) 
+                    var component = componentPool.TryTake(out Entitas.IComponent comp) 
                             ? comp
                             : flagComponent;
 

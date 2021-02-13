@@ -61,7 +61,7 @@ class describe_Entity : nspec {
 
             it["initializes"] = () => {
                 var contextInfo = new ContextInfo(null, null, null);
-                var componentPools = new ConcurrentStack<IComponent>[42];
+                var componentPools = new ConcurrentBag<IComponent>[42];
                 e = new TestEntity();
                 e.Initialize(1, 2, componentPools, contextInfo);
 
@@ -74,7 +74,7 @@ class describe_Entity : nspec {
 
             it["reactivates after being desroyed"] = () => {
                 var contextInfo = new ContextInfo(null, null, null);
-                var componentPools = new ConcurrentStack<IComponent>[42];
+                var componentPools = new ConcurrentBag<IComponent>[42];
                 e = new TestEntity();
                 e.Initialize(1, 2, componentPools, contextInfo);
 
@@ -233,7 +233,7 @@ class describe_Entity : nspec {
 
                 var componentPool = e.GetComponentPool(CID.ComponentA);
                 componentPool.Count.should_be(1);
-                componentPool.TryPop(out IComponent poolComp);
+                componentPool.TryTake(out IComponent poolComp);
                 poolComp.should_be_same(component);
             };
 

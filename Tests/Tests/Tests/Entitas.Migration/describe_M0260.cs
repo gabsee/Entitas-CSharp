@@ -105,7 +105,7 @@ namespace Entitas {
             component.value = newValue;
             ReplaceComponent(ComponentIds.Score, component);
             if (previousComponent != null) {
-                _scoreComponentPool.Push(previousComponent);
+                _scoreComponentPool.Add(previousComponent);
             }
             return this;
         }
@@ -113,7 +113,7 @@ namespace Entitas {
         public Entity RemoveScore() {
             var component = score;
             RemoveComponent(ComponentIds.Score);
-            _scoreComponentPool.Push(component);
+            _scoreComponentPool.Add(component);
             return this;
         }
     }

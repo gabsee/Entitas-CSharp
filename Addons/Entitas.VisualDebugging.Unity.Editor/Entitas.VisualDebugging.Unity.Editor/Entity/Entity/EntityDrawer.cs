@@ -234,7 +234,7 @@ namespace Entitas.VisualDebugging.Unity.Editor
                             }
                             else
                             {
-                                entity.GetComponentPool(index).Push(newComponent);
+                                entity.GetComponentPool(index).Add(newComponent);
                             }
                         }
                     }

@@ -86,7 +86,7 @@ class describe_PublicMemberInfoEntityExtension : nspec {
                 entity.AddComponentA();
 
                 var component = new ComponentA();
-                target.GetComponentPool(CID.ComponentA).Push(component);
+                target.GetComponentPool(CID.ComponentA).Add(component);
 
                 entity.CopyTo(target);
 

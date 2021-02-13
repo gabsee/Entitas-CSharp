@@ -25,13 +25,13 @@ namespace Entitas {
         int creationIndex { get; }
         bool isEnabled { get; }
 
-        ConcurrentStack<IComponent>[] componentPools { get; }
+        ConcurrentBag<IComponent>[] componentPools { get; }
         ContextInfo contextInfo { get; }
         IAERC aerc { get; }
 
         void Initialize(int creationIndex,
             int totalComponents,
-            ConcurrentStack<IComponent>[] componentPools,
+            ConcurrentBag<IComponent>[] componentPools,
             ContextInfo contextInfo = null,
             IAERC aerc = null);
 
@@ -43,6 +43,7 @@ namespace Entitas {
 
         IComponent GetComponent(int index);
         IComponent[] GetComponents();
+        IComponent[] GetInternalComponents();
         int[] GetComponentIndices();
 
         bool HasComponent(int index);
@@ -51,7 +52,7 @@ namespace Entitas {
 
         void RemoveAllComponents();
 
-        ConcurrentStack<IComponent> GetComponentPool(int index);
+        ConcurrentBag<IComponent> GetComponentPool(int index);
         IComponent CreateComponent(int index, Type type);
         T CreateComponent<T>(int index) where T : new();
 

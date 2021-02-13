@@ -15,7 +15,7 @@ namespace Entitas {
 
         int totalComponents { get; }
 
-        ConcurrentStack<IComponent>[] componentPools { get; }
+        ConcurrentBag<IComponent>[] componentPools { get; }
         ContextInfo contextInfo { get; }
 
         int count { get; }

@@ -33,7 +33,7 @@ namespace Entitas {
         /// Removed components will be pushed to the componentPool.
         /// Use entity.CreateComponent(index, type) to get a new or reusable
         /// component from the componentPool.
-        public ConcurrentStack<IComponent>[] componentPools { get { return _componentPools; } }
+        public ConcurrentBag<IComponent>[] componentPools { get { return _componentPools; } }
 
         /// The contextInfo contains information about the context.
         /// It's used to provide better error messages.
@@ -52,7 +52,7 @@ namespace Entitas {
 
         readonly int _totalComponents;
 
-        readonly ConcurrentStack<IComponent>[] _componentPools;
+        readonly ConcurrentBag<IComponent>[] _componentPools;
         readonly ContextInfo _contextInfo;
         readonly Func<IEntity, IAERC> _aercFactory;
         readonly Func<TEntity> _entityFactory;
@@ -120,8 +120,8 @@ namespace Entitas {
             return new ContextInfo("Unnamed Context", componentNames, null);
         }
 
-        ConcurrentStack<IComponent>[] InitComponentPools() {
-            var componentPools = new ConcurrentStack<IComponent>[totalComponents];
+        ConcurrentBag<IComponent>[] InitComponentPools() {
+            var componentPools = new ConcurrentBag<IComponent>[totalComponents];
             for (int i = 0; i < totalComponents; i++) {
                 componentPools[i] = ComponentPool.Get(_contextInfo.componentTypes[i]);
             }
