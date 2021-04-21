@@ -173,6 +173,13 @@ namespace Entitas.CodeGeneration.Plugins {
             return (string)data[ENTITY_INDEX_TYPE];
         }
 
+        public static string GetEntityIndexTypeFull(this EntityIndexData data, string contextName) {
+            if (IsCustom(data))
+                return GetEntityIndexType(data);
+            else
+                return $"{GetEntityIndexType(data)}<{contextName}Entity, {GetKeyType(data)}>";
+        }
+
         public static void SetEntityIndexType(this EntityIndexData data, string type) {
             data[ENTITY_INDEX_TYPE] = type;
         }
@@ -199,6 +206,12 @@ namespace Entitas.CodeGeneration.Plugins {
 
         public static void SetEntityIndexName(this EntityIndexData data, string name) {
             data[ENTITY_INDEX_NAME] = name;
+        }
+
+        public static string GetEntityIndexNameUnique(this EntityIndexData data) {
+            return data.GetHasMultiple()
+                ? data.GetEntityIndexName() + data.GetMemberName().UppercaseFirst()
+                : data.GetEntityIndexName();
         }
 
         public static string[] GetContextNames(this EntityIndexData data) {
