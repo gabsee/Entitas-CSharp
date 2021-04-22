@@ -27,12 +27,10 @@ ${indexCache}
     public void InitializeEntityIndices() {
 ${addIndices}
     }
-}
-
-public static class ${ContextName}ContextExtensions {
 
 ${getIndices}
-}";
+}
+";
 
         const string INDEX_CACHE_TEMPLATE = @"    public ${IndexTypeFull} ${IndexName}Index;";
 
@@ -45,16 +43,16 @@ ${getIndices}
         const string ADD_CUSTOM_INDEX_TEMPLATE = @"        ${IndexName}Index = new ${IndexTypeFull}(this);
         AddEntityIndex(${IndexName}Index);";
 
-        const string GET_INDEX_TEMPLATE = @"    public static System.Collections.Generic.HashSet<${ContextName}Entity> GetEntitiesWith${IndexName}(this ${ContextName}Context context, ${KeyType} ${MemberName}) {
-        return context.${IndexName}Index.GetEntities(${MemberName});
+        const string GET_INDEX_TEMPLATE = @"    public System.Collections.Generic.HashSet<${ContextName}Entity> GetEntitiesWith${IndexName}(${KeyType} ${MemberName}) {
+        return ${IndexName}Index.GetEntities(${MemberName});
     }";
 
-        const string GET_PRIMARY_INDEX_TEMPLATE = @"    public static ${ContextName}Entity GetEntityWith${IndexName}(this ${ContextName}Context context, ${KeyType} ${MemberName}) {
-        return context.${IndexName}Index.GetEntity(${MemberName});
+        const string GET_PRIMARY_INDEX_TEMPLATE = @"    public ${ContextName}Entity GetEntityWith${IndexName}(${KeyType} ${MemberName}) {
+        return ${IndexName}Index.GetEntity(${MemberName});
     }";
 
-        const string CUSTOM_METHOD_TEMPLATE = @"    public static ${ReturnType} ${MethodName}(this ${ContextName}Context context, ${methodArgs}) {
-        return context.${IndexName}Index.${MethodName}(${args});
+        const string CUSTOM_METHOD_TEMPLATE = @"    public ${ReturnType} ${MethodName}(${methodArgs}) {
+        return ${IndexName}Index.${MethodName}(${args});
     }
 ";
 
