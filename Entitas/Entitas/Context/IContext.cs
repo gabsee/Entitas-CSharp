@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System.Collections.Generic;
+using System.Collections.Concurrent;
 
 namespace Entitas {
 
@@ -26,6 +27,7 @@ namespace Entitas {
 
         void AddEntityIndex(IEntityIndex entityIndex);
         IEntityIndex GetEntityIndex(string name);
+        IEnumerable<IEntityIndex> GetEntityIndices();
 
         void ResetCreationIndex();
         void ClearComponentPool(int index);

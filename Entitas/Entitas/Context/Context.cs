@@ -239,6 +239,11 @@ namespace Entitas {
             return entityIndex;
         }
 
+
+        public IEnumerable<IEntityIndex> GetEntityIndices() {
+            return _entityIndices.Values;
+        }
+
         /// Resets the creationIndex back to 0.
         public void ResetCreationIndex() {
             _creationIndex = 0;
