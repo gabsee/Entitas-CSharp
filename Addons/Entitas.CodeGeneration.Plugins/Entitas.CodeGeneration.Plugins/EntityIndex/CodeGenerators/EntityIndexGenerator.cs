@@ -19,7 +19,9 @@ namespace Entitas.CodeGeneration.Plugins {
         public Dictionary<string, string> defaultProperties { get { return _ignoreNamespacesConfig.defaultProperties; } }
 
         const string CLASS_TEMPLATE =
-            @"public partial class ${ContextName}Context {
+@"using Entitas;
+
+public partial class ${ContextName}Context {
 
 ${indexCache}
 
@@ -62,7 +64,6 @@ ${getIndices}
 
         public CodeGenFile[] Generate(CodeGeneratorData[] data) {
             try {
-
                 var contextData = data
                     .OfType<ContextData>()
                     .OrderBy(d => d.GetContextName())
@@ -73,14 +74,23 @@ ${getIndices}
                     .OrderBy(d => d.GetEntityIndexName())
                     .ToArray();
 
-                return contextData.Select(cd =>
-                    generateEntityIndices(
-                        cd.GetContextName(),
-                        entityIndexData.Where(
-                            d => d.GetContextNames().Contains(cd.GetContextName())
-                        ).ToArray()
-                    )
-                ).ToArray();
+                List<CodeGenFile> files = new List<CodeGenFile>();
+                foreach (var cd in contextData) {
+
+                    var contextName = cd.GetContextName();
+                    var indices = entityIndexData.Where(
+                        d => d.GetContextNames().Contains(cd.GetContextName())
+                    ).ToArray();
+
+                    if (indices == null || indices.Length == 0)
+                        continue;
+
+                    var file = generateEntityIndices(contextName, indices);
+                    if (file != null)
+                        files.Add(file);
+                }
+
+                return files.ToArray();
             }
             catch (System.Exception e) {
                 System.Console.WriteLine(e.ToString());
@@ -89,9 +99,6 @@ ${getIndices}
         }
 
         CodeGenFile generateEntityIndices(string contextName, EntityIndexData[] data) {
-
-            if (data.Length == 0)
-                return null;
 
             var indexCache = string.Join("\n\n", data
                 .Select(d => generateIndexCache(d, contextName))
@@ -112,7 +119,7 @@ ${getIndices}
                 .Replace("${getIndices}", getIndices);
 
             return new CodeGenFile(
-                contextName + Path.DirectorySeparatorChar + contextName.AddContextSuffix() + ".cs",
+                contextName + Path.DirectorySeparatorChar + contextName.AddContextSuffix() + "Indices.cs",
                 fileContent,
                 GetType().FullName
             );
