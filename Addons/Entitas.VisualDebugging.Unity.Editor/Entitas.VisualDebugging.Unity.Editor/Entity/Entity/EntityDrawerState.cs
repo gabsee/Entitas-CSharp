@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
 using DesperateDevs.Utils;
+
 using UnityEditor;
 using UnityEngine;
 
@@ -46,13 +49,19 @@ namespace Entitas.VisualDebugging.Unity.Editor {
         }
 
         public static readonly IDefaultInstanceCreator[] _defaultInstanceCreators;
-        public static readonly ITypeDrawer[] _typeDrawers;
-        public static readonly IComponentDrawer[] _componentDrawers;
+        public static readonly ITypeDrawer[] _allTypeDrawers;
+        public static readonly IComponentDrawer[] _allComponentDrawers;
+
+        private static readonly Dictionary<Type, ITypeDrawer> _typeDrawers;
+        private static readonly Dictionary<Type, IComponentDrawer> _componentDrawers;
 
         static EntityDrawer() {
             _defaultInstanceCreators = AppDomain.CurrentDomain.GetInstancesOf<IDefaultInstanceCreator>();
-            _typeDrawers = AppDomain.CurrentDomain.GetInstancesOf<ITypeDrawer>();
-            _componentDrawers = AppDomain.CurrentDomain.GetInstancesOf<IComponentDrawer>();
+            _allTypeDrawers = AppDomain.CurrentDomain.GetInstancesOf<ITypeDrawer>();
+            _allComponentDrawers = AppDomain.CurrentDomain.GetInstancesOf<IComponentDrawer>();
+
+            _typeDrawers = new Dictionary<Type, ITypeDrawer>();
+            _componentDrawers = new Dictionary<Type, IComponentDrawer>();
         }
 
         static bool[] getUnfoldedComponents(IEntity entity) {
@@ -130,23 +139,19 @@ namespace Entitas.VisualDebugging.Unity.Editor {
         }
 
         static IComponentDrawer getComponentDrawer(Type type) {
-            foreach (var drawer in _componentDrawers) {
-                if (drawer.HandlesType(type)) {
-                    return drawer;
-                }
-            }
 
-            return null;
+            if (!_componentDrawers.ContainsKey(type))
+                _componentDrawers[type] = _allComponentDrawers.FirstOrDefault(d => d.HandlesType(type));
+
+            return _componentDrawers[type];
         }
 
         static ITypeDrawer getTypeDrawer(Type type) {
-            foreach (var drawer in _typeDrawers) {
-                if (drawer.HandlesType(type)) {
-                    return drawer;
-                }
-            }
 
-            return null;
+            if (!_typeDrawers.ContainsKey(type))
+                _typeDrawers[type] = _allTypeDrawers.FirstOrDefault(d => d.HandlesType(type));
+
+            return _typeDrawers[type];
         }
     }
 }
