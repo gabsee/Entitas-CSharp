@@ -20,6 +20,15 @@ namespace Entitas {
         /// Occurs when an entity got destroyed.
         public event ContextEntityChanged OnEntityDestroyed;
 
+        /// Occurs when a component gets added.
+        public event EntityComponentChanged OnComponentAdded;
+
+        /// Occurs when a component gets removed.
+        public event EntityComponentChanged OnComponentRemoved;
+
+        /// Occurs when a component gets replaced.
+        public event EntityComponentReplaced OnComponentReplaced;
+
         /// Occurs when a group gets created for the first time.
         public event ContextGroupChanged OnGroupCreated;
 
@@ -71,8 +80,9 @@ namespace Entitas {
         TEntity[] _entitiesCache;
 
         // Cache delegates to avoid gc allocations
-        readonly EntityComponentChanged _cachedEntityChanged;
-        readonly EntityComponentReplaced _cachedComponentReplaced;
+        readonly EntityComponentChanged _entityComponentAdded;
+        readonly EntityComponentChanged _entityComponentRemoved;
+        readonly EntityComponentReplaced _entityComponentReplaced;
         readonly EntityEvent _cachedEntityReleased;
         readonly EntityEvent _cachedDestroyEntity;
 
@@ -104,8 +114,9 @@ namespace Entitas {
             _entityIndices = new Dictionary<string, IEntityIndex>();
 
             // Cache delegates to avoid gc allocations
-            _cachedEntityChanged = updateGroupsComponentAddedOrRemoved;
-            _cachedComponentReplaced = updateGroupsComponentReplaced;
+            _entityComponentAdded = entityComponentAdded;
+            _entityComponentRemoved = entityComponentRemoved;
+            _entityComponentReplaced = entityComponentReplaced;
             _cachedEntityReleased = onEntityReleased;
             _cachedDestroyEntity = onDestroyEntity;
         }
@@ -145,9 +156,9 @@ namespace Entitas {
             entity.Retain(this);
             _entitiesCache = null;
 
-            entity.OnComponentAdded += _cachedEntityChanged;
-            entity.OnComponentRemoved += _cachedEntityChanged;
-            entity.OnComponentReplaced += _cachedComponentReplaced;
+            entity.OnComponentAdded += _entityComponentAdded;
+            entity.OnComponentRemoved += _entityComponentRemoved;
+            entity.OnComponentReplaced += _entityComponentReplaced;
             entity.OnEntityReleased += _cachedEntityReleased;
             entity.OnDestroyEntity += _cachedDestroyEntity;
 
@@ -283,6 +294,24 @@ namespace Entitas {
 
         public override string ToString() {
             return _contextInfo.name;
+        }
+
+        void entityComponentAdded(IEntity entity, int index, IComponent component) {
+            updateGroupsComponentAddedOrRemoved(entity, index, component);
+            if (OnComponentAdded != null)
+                OnComponentAdded.Invoke(entity, index, component);
+        }
+
+        void entityComponentRemoved(IEntity entity, int index, IComponent component) {
+            updateGroupsComponentAddedOrRemoved(entity, index, component);
+            if (OnComponentRemoved != null)
+                OnComponentRemoved.Invoke(entity, index, component);
+        }
+
+        void entityComponentReplaced(IEntity entity, int index, IComponent previousComponent, IComponent newComponent) {
+            updateGroupsComponentReplaced(entity, index, previousComponent, newComponent);
+            if (OnComponentReplaced != null)
+                OnComponentReplaced.Invoke(entity, index, previousComponent, newComponent);
         }
 
         void updateGroupsComponentAddedOrRemoved(IEntity entity, int index, IComponent component) {
