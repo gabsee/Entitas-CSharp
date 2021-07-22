@@ -33,7 +33,11 @@ namespace Entitas.CodeGeneration.Plugins {
         ) {
 
         var postConstructors = System.Linq.Enumerable.Where(
-            GetType().GetMethods(),
+            GetType().GetMethods(
+                System.Reflection.BindingFlags.Public |
+                System.Reflection.BindingFlags.NonPublic |
+                System.Reflection.BindingFlags.Instance
+            ),
             method => System.Attribute.IsDefined(method, typeof(Entitas.CodeGeneration.Attributes.PostConstructorAttribute))
         );
 

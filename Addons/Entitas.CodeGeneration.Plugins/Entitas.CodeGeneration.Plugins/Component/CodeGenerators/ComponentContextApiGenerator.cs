@@ -11,9 +11,16 @@ namespace Entitas.CodeGeneration.Plugins {
         const string STANDARD_TEMPLATE =
             @"public partial class ${ContextType} {
 
-    public ${EntityType} ${componentName}Entity { get { return GetGroup(${MatcherType}.${ComponentName}).GetSingleEntity(); } }
+    private Entitas.IGroup<${EntityType}> _${componentName}Group;
+
+    [Entitas.CodeGeneration.Attributes.PostConstructor]
+    private void Initialize${ComponentName}() {
+        _${componentName}Group = GetGroup(${MatcherType}.${ComponentName});
+    }    
+
+    public ${EntityType} ${componentName}Entity { get { return _${componentName}Group.GetSingleEntity(); } }
     public ${ComponentType} ${validComponentName} { get { return ${componentName}Entity.${componentName}; } }
-    public bool has${ComponentName} { get { return ${componentName}Entity != null; } }
+    public bool has${ComponentName} { get { return _${componentName}Group.count > 0; } }
 
     public ${EntityType} Set${ComponentName}(${newMethodParameters}) {
         if (has${ComponentName}) {
@@ -43,10 +50,17 @@ namespace Entitas.CodeGeneration.Plugins {
         const string FLAG_TEMPLATE =
             @"public partial class ${ContextType} {
 
-    public ${EntityType} ${componentName}Entity { get { return GetGroup(${MatcherType}.${ComponentName}).GetSingleEntity(); } }
+    private Entitas.IGroup<${EntityType}> _${componentName}Group;
+
+    [Entitas.CodeGeneration.Attributes.PostConstructor]
+    private void Initialize${ComponentName}() {
+        _${componentName}Group = GetGroup(${MatcherType}.${ComponentName});
+    }    
+
+    public ${EntityType} ${componentName}Entity { get { return _${componentName}Group.GetSingleEntity(); } }
 
     public bool ${prefixedComponentName} {
-        get { return ${componentName}Entity != null; }
+        get { return _${componentName}Group.count > 0; }
         set {
             var entity = ${componentName}Entity;
             if (value != (entity != null)) {

@@ -26,7 +26,7 @@ public partial class ${ContextName}Context {
 ${indexCache}
 
     [Entitas.CodeGeneration.Attributes.PostConstructor]
-    public void InitializeEntityIndices() {
+    private void InitializeEntityIndices() {
 ${addIndices}
     }
 
